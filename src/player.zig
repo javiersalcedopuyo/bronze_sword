@@ -39,10 +39,12 @@ fn player_update(self: *Actor) void
     if (raylib.IsKeyDown(raylib.KEY_D))
     {
         self.game_object.drawable.transform.position.x += self.move_speed * delta_time;
+        self.direction = .right;
     }
     else if (raylib.IsKeyDown(raylib.KEY_A))
     {
         self.game_object.drawable.transform.position.x -= self.move_speed * delta_time;
+        self.direction = .left;
     }
     // TODO: Attack
 }

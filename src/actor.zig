@@ -14,6 +14,7 @@ pub const Actor = struct
     const Self = @This();
 
     game_object:    GameObject,
+    direction:      Direction = .right,
     health:         u8  = 100,
     move_speed:     f32 = 100,
     update_impl:    *const fn (*Self) void = &Self.dummy_update,
@@ -29,4 +30,10 @@ pub const Actor = struct
     }
 
     fn dummy_update(self: *Self) void { _ = self; }
+};
+
+pub const Direction = enum(i8)
+{
+    right = 1,
+    left  = -1
 };

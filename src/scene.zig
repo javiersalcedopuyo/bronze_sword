@@ -12,6 +12,7 @@ const Actor  = @import("actor.zig").Actor;
 const allocator = std.heap.c_allocator;
 
 const build_player = @import("player.zig").build_player;
+const build_wizard = @import("wizard.zig").build_wizard;
 
 pub fn build_scene(id: SceneID) Scene
 {
@@ -22,9 +23,13 @@ pub fn build_scene(id: SceneID) Scene
             const tex = raylib.LoadTexture("assets/background2.png");
             var scene = Scene{.id = id,
                               .background = Background.new(tex)};
+            scene.background.drawable.tint = raylib.LIGHTGRAY;
 
-            const sprite = raylib.LoadTexture("assets/elite.png");
-            scene.actors.append( build_player(sprite, 4, &scene) ) catch |e|
+            const player_sprite = raylib.LoadTexture("assets/elite.png");
+            scene.player = build_player(player_sprite, 4, &scene);
+
+            const wizard_sprite = raylib.LoadTexture("assets/wizard_l2.png");
+            scene.enemies.append( build_wizard(wizard_sprite, 4, &scene) ) catch |e|
             {
                 print("Couldn't append player. {}", .{e});
             };
@@ -44,24 +49,36 @@ pub const Scene = struct
 
     id: SceneID,
     background: Background = undefined, // TODO: ArrayList
-    actors: ArrayList(Actor) = ArrayList(Actor).init(allocator),
+    player: ?Actor = null,
+    enemies: ArrayList(Actor) = ArrayList(Actor).init(allocator),
 
     pub fn update(self: *Self) void
     {
         self.background.update();
-        for (self.actors.items) |*actor|
+
+        if (self.player) |*pc|
         {
-            actor.update();
-            // TODO: Remove dead actors
+            pc.update();
+        }
+
+        for (self.enemies.items) |*enemy|
+        {
+            enemy.update();
+            // TODO: Remove dead enemies
         }
     }
 
     pub fn draw(self: *Self) void
     {
         self.background.draw();
-        for (self.actors.items) |actor|
+        for (self.enemies.items) |enemy|
         {
-            actor.draw();
+            enemy.draw();
+        }
+
+        if (self.player) |pc|
+        {
+            pc.draw();
         }
     }
 };
@@ -73,5 +90,5 @@ pub const SceneID = enum(u8)
     death,
     victory,
 
-    pub const id_count = @enumToInt(SceneID.victory) + 1;
+    pub const count = @enumToInt(SceneID.victory) + 1;
 };

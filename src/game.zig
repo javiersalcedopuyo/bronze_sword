@@ -15,7 +15,7 @@ pub const Game = struct
 
     title: []const u8,
     window_size: Vector2,
-    scenes: [SceneID.id_count]Scene = undefined,
+    scenes: [SceneID.count]Scene = undefined,
 
     active_scene_ID: SceneID = .game,
 
