@@ -51,6 +51,7 @@ pub const Scene = struct
     background: Background = undefined, // TODO: ArrayList
     player: ?Actor = null,
     enemies: ArrayList(Actor) = ArrayList(Actor).init(allocator),
+    score: u8 = 0,
 
     pub fn update(self: *Self) void
     {
@@ -71,6 +72,8 @@ pub const Scene = struct
     pub fn draw(self: *Self) void
     {
         self.background.draw();
+        raylib.DrawText(self.get_score_text().ptr, 8, 4, 32, raylib.WHITE);
+
         for (self.enemies.items) |enemy|
         {
             enemy.draw();
@@ -80,6 +83,12 @@ pub const Scene = struct
         {
             pc.draw();
         }
+    }
+
+    fn get_score_text(self: *const Self) []const u8
+    {
+        return std.fmt.allocPrint(allocator, "Score: {d}", .{self.score})
+                catch "Score: 999";
     }
 };
 
