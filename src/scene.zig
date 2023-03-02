@@ -28,7 +28,7 @@ pub fn build_scene(id: SceneID) Scene
             const player_sprite = raylib.LoadTexture("assets/elite.png");
             scene.player = build_player(player_sprite, 4, &scene);
 
-            const wizard_sprite = raylib.LoadTexture("assets/wizard_l2.png");
+            const wizard_sprite = raylib.LoadTexture("assets/wizard.png");
             scene.enemies.append( build_wizard(wizard_sprite, 4, &scene) ) catch |e|
             {
                 print("Couldn't append player. {}", .{e});

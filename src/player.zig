@@ -13,21 +13,21 @@ const Transform     = @import("transform.zig").Transform;
 
 pub fn build_player(texture: Texture, scale: f32, scene: *Scene) Actor
 {
-    const window_width  = @intToFloat(f32, raylib.GetRenderWidth());
-    const texture_width = @intToFloat(f32, texture.width) * scale;
-    const position_x    = (window_width - texture_width) * 0.5;
-
     const window_height     = @intToFloat(f32, raylib.GetRenderHeight());
     const texture_height    = @intToFloat(f32, texture.height) * scale;
     const position_y        = window_height - texture_height;
 
-    const transform = Transform{.position = .{.x = position_x, .y = position_y},
-                                .scale = scale};
-
-    const drawable = Drawable{.transform = transform, .texture = texture};
+    var drawable = Drawable.new(texture);
+    drawable.transform = Transform
+    {
+        // Spawn at the left side of the screen
+        .position = .{.x = 0, .y = position_y},
+        .scale    = .{.x = scale, .y = scale}
+    };
 
     return Actor{.game_object = GameObject.new(drawable, scene),
-                 .update_impl = &player_update};
+                 .update_impl = &player_update,
+                 .move_speed  = 100};
 }
 
 fn player_update(self: *Actor) void

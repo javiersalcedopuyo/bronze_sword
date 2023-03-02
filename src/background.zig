@@ -19,8 +19,8 @@ pub const Background = struct
         const scale = @intToFloat(f32, raylib.GetScreenHeight()) /
                       @intToFloat(f32, texture.height);
 
-        const drawable = Drawable{.texture = texture,
-                                  .transform = .{.scale = scale}};
+        var drawable = Drawable.new(texture);
+        drawable.transform = .{.scale = .{.x=scale, .y=scale}};
 
         return Background{.drawable = drawable};
     }
