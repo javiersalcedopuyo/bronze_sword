@@ -73,6 +73,7 @@ pub const Scene = struct
     {
         self.background.draw();
         raylib.DrawText(self.get_score_text().ptr, 8, 4, 32, raylib.WHITE);
+        raylib.DrawText(get_fps_text().ptr, 8, 36, 24, raylib.GREEN);
 
         for (self.enemies.items) |enemy|
         {
@@ -88,9 +89,17 @@ pub const Scene = struct
     fn get_score_text(self: *const Self) []const u8
     {
         return std.fmt.allocPrint(allocator, "Score: {d}", .{self.score})
-                catch "Score: 999";
+                catch "Score: ???";
     }
+
 };
+
+fn get_fps_text() [] const u8
+{
+    const fps = @floor(1 / raylib.GetFrameTime());
+    return std.fmt.allocPrint(allocator, "{d}fps", .{fps})
+            catch "???fps";
+}
 
 pub const SceneID = enum(u8)
 {
