@@ -21,8 +21,6 @@ class Actor{
     update()
     health: u8
     move_speed: f32
-    direction: enum
-    animation_state: enum
 }
 
 class Item{
@@ -38,6 +36,9 @@ class Background{
 
 class Drawable{
     draw()
+    get_direction(): enum
+    set_direction()
+    region: Rectangle
     tint: Color
 }
 
@@ -45,6 +46,7 @@ class Transform{
     position: Vector2
     scale: f32
     rotation: f32
+    direction: enum
 }
 
 class Weapon{
@@ -63,12 +65,25 @@ class Projectile{
 class GameObject{
     new(): GameObject
     intersects(): bool
+    get_direction(): enum
+    set_direction()
+    set_animation()
     draw()
     bounding_box_size: Vector2
+    state: enum
 }
 
 class Container{
     open()
+}
+
+class Animation{
+    current_frame: u8
+    frame_rate: u8
+    seconds_since_last_frame: f32
+    frames: []Rectangles
+    update()
+    get_current_frame(): Rectangle
 }
 
 Game --* "N" Scene
@@ -86,6 +101,7 @@ Background --* "1..N" Drawable
 
 GameObject --* Drawable
 GameObject --o Scene
+GameObject --* "0..N" Animation
 
 Actor --* GameObject
 Container --* GameObject
@@ -99,5 +115,5 @@ Drawable --o Texture
 
 Actor --* Weapon
 
-Weapon .. Projectile: Spawns
+Weapon ..> Projectile: Spawns
 ```

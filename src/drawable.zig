@@ -1,5 +1,6 @@
 const std = @import("std");
 const Transform = @import("transform.zig").Transform;
+const Direction = @import("transform.zig").Direction;
 
 const raylib = @cImport({
     @cInclude("../dependencies/raylib.h");
@@ -54,5 +55,15 @@ pub const Drawable = struct
                               origin,
                               self.transform.rotation,
                               self.tint);
+    }
+
+    pub fn get_direction(self: *const Self) Direction
+    {
+        return self.transform.direction;
+    }
+
+    pub fn set_direction(self: *Self, dir: Direction) void
+    {
+        self.transform.direction = dir;
     }
 };
