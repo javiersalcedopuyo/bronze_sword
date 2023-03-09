@@ -49,19 +49,16 @@ pub fn build_wizard(texture: Texture, scale: f32, scene: *Scene) Actor
         }
     };
 
-    var go = GameObject.new(drawable, scene);
-    go.animations.append
-    (
-        Animation // Walking
+    var go = GameObject.new(drawable, State.count, scene);
+    go.animations.items[@enumToInt(State.walk)] = Animation
+    {
+        .frame_rate = 2,
+        .frames = &[_]Rectangle
         {
-            .frame_rate = 2,
-            .frames = &[_]Rectangle
-            {
-                .{.x=0, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT},
-                .{.x=FRAME_WIDTH, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT},
-            }
+            .{.x=0, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT},
+            .{.x=FRAME_WIDTH, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT},
         }
-    ) catch |e| print("❌ ERROR: Failed to append animation to wizard. {}", .{e});
+    };
 
     return Actor{.game_object = go,
                  .update_impl = &wizard_update,
@@ -104,5 +101,7 @@ fn wizard_update(self: *Actor) void
 const State = enum(u8)
 {
     walk,
-    attack
+    attack,
+
+    const count: usize = @enumToInt(State.attack) + 1;
 };

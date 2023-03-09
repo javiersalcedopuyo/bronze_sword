@@ -29,30 +29,24 @@ pub fn build_player(texture: Texture, scale: f32, scene: *Scene) Actor
         .scale    = .{.x = scale, .y = scale}
     };
 
-    var go = GameObject.new(drawable, scene);
-    go.animations.append
-    (
-        Animation // Idle
+    var go = GameObject.new(drawable, State.count, scene);
+    go.animations.items[@enumToInt(State.idle)] = Animation
+    {
+        .frame_rate = 0, // Single frame, no animation
+        .frames = &[_]Rectangle
         {
-            .frame_rate = 0, // Single frame, no animation
-            .frames = &[_]Rectangle
-            {
-                .{.x=0, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT}
-            }
+            .{.x=0, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT}
         }
-    ) catch |e| print("❌ ERROR: Failed to append animation to player. {}", .{e});
-    go.animations.append
-    (
-        Animation // Walking
+    };
+    go.animations.items[@enumToInt(State.walk)] = Animation
+    {
+        .frame_rate = 2,
+        .frames = &[_]Rectangle
         {
-            .frame_rate = 2,
-            .frames = &[_]Rectangle
-            {
-                .{.x=FRAME_WIDTH, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT},
-                .{.x=FRAME_WIDTH * 2, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT},
-            }
+            .{.x=FRAME_WIDTH, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT},
+            .{.x=FRAME_WIDTH * 2, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT},
         }
-    ) catch |e| print("❌ ERROR: Failed to append animation to player. {}", .{e});
+    };
 
     return Actor{.game_object = go,
                  .update_impl = &player_update,
@@ -91,5 +85,7 @@ const State = enum(u8)
     idle = 0,
     walk,
     jump,
-    attack
+    attack,
+
+    const count: usize = @enumToInt(State.attack) + 1;
 };

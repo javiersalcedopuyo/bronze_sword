@@ -22,17 +22,27 @@ pub const GameObject = struct
     drawable:           Drawable,
     scene:              *Scene,
     bounding_box_size:  Vector2 = .{.x=0, .y=0},
-    animations:         ArrayList(Animation) = ArrayList(Animation).init(allocator), // TODO: Use a slice instead
+    animations:         ArrayList(?Animation) = ArrayList(?Animation).init(allocator), // TODO: Use a slice instead
     state:              U8Enum = 0,
 
-    pub fn new(d: Drawable, s: *Scene) Self
+    pub fn new(d: Drawable, num_animations: usize, s: *Scene) Self
     {
-        const bbs = Vector2{.x = @intToFloat(f32, d.texture.width),
-                            .y = @intToFloat(f32, d.texture.height)};
+        var result = Self{.drawable = d, .scene = s};
 
-        return Self{.drawable = d,
-                    .scene = s,
-                    .bounding_box_size = bbs};
+        result.bounding_box_size = Vector2
+        {
+            .x = @intToFloat(f32, d.texture.width),
+            .y = @intToFloat(f32, d.texture.height)
+        };
+
+        result.animations.appendNTimes(null, num_animations)
+        catch |e|
+        {
+            print("❌ FATAL ERROR: {}", .{e});
+            std.os.exit(1);
+        };
+
+        return result;
     }
 
     pub fn draw(self: *const Self) void
@@ -49,14 +59,15 @@ pub const GameObject = struct
             return ;
         }
 
-        var anim = &self.animations.items[idx];
+        if (self.animations.items[idx]) |*anim|
+        {
+            var rect = anim.get_current_frame();
+            // Flip the texture according to the facing direction
+            rect.width *= @intToFloat(f32, @enumToInt(self.get_direction()));
 
-        var rect = anim.get_current_frame();
-        // Flip the texture according to the facing direction
-        rect.width *= @intToFloat(f32, @enumToInt(self.get_direction()));
-
-        self.drawable.region = rect;
-        anim.update();
+            self.drawable.region = rect;
+            anim.update();
+        }
     }
 
     pub fn get_direction(self: *const Self) Direction
