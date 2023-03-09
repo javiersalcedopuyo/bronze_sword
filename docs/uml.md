@@ -2,6 +2,7 @@
 classDiagram
 
 class Game{
+    deinit()
     run_game_loop()
     title: String
     window_size: Vector2
@@ -10,7 +11,7 @@ class Game{
 
 class Scene{
     init()
-    clean_up()
+    deinit()
     update()
     draw()
     points: u32
@@ -18,6 +19,7 @@ class Scene{
 
 class Actor{
     init()
+    deinit()
     update()
     health: u8
     move_speed: f32
@@ -30,11 +32,13 @@ class Item{
 
 class Background{
     new()
+    deinit()
     update()
     draw()
 }
 
 class Drawable{
+    deinit()
     draw()
     get_direction(): enum
     set_direction()
@@ -64,6 +68,7 @@ class Projectile{
 
 class GameObject{
     new(): GameObject
+    deinit()
     intersects(): bool
     get_direction(): enum
     set_direction()

@@ -53,6 +53,14 @@ pub const Scene = struct
     enemies: ArrayList(Actor) = ArrayList(Actor).init(allocator),
     score: u8 = 0,
 
+    pub fn deinit(self: *Self) void
+    {
+        self.background.deinit();
+        if (self.player) |*p| { p.deinit(); }
+        for (self.enemies.items) |*e| { e.deinit(); }
+        self.enemies.deinit();
+    }
+
     pub fn update(self: *Self) void
     {
         self.background.update();

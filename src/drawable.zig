@@ -35,6 +35,12 @@ pub const Drawable = struct
         };
     }
 
+    pub fn deinit(self: *Self) void
+    {
+        // I'm not sure this is strictly necessary...
+        raylib.UnloadTexture(self.texture);
+    }
+
     pub fn draw(self: *const Self) void
     {
         var dst_rect = Rectangle

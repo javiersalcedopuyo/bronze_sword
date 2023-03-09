@@ -18,6 +18,11 @@ pub const Actor = struct
     move_speed:     f32 = 100,
     update_impl:    *const fn (*Self) void = &Self.dummy_update,
 
+    pub fn deinit(self: *Self) void
+    {
+        self.game_object.deinit();
+    }
+
     pub fn draw(self: *const Self) void
     {
         self.game_object.draw();

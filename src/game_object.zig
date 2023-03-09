@@ -45,6 +45,12 @@ pub const GameObject = struct
         return result;
     }
 
+    pub fn deinit(self: *Self) void
+    {
+        self.animations.deinit();
+        self.drawable.deinit();
+    }
+
     pub fn draw(self: *const Self) void
     {
         self.drawable.draw();

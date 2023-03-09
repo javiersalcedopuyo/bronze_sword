@@ -30,9 +30,14 @@ pub const Game = struct
         self.scenes[@enumToInt(SceneID.game)] = build_scene(.game);
     }
 
-    pub fn clean_up(self: *Self) void
+    pub fn deinit(self: *Self) void
     {
-        _ = self;
+        var i: usize = 0;
+        while (i<self.scenes.len) : (i += 1)
+        {
+            self.scenes[i].deinit();
+        }
+
         raylib.CloseWindow();
     }
 

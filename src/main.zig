@@ -11,7 +11,7 @@ pub fn main() !void
     var game = Game{.title = "Bronze Sword",
                     .window_size = .{.x=800, .y=600}};
     game.init();
-    defer game.clean_up();
+    defer game.deinit();
 
     while (raylib.WindowShouldClose() == false)
     {

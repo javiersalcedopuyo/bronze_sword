@@ -25,6 +25,11 @@ pub const Background = struct
         return Background{.drawable = drawable};
     }
 
+    pub fn deinit(self: *Self) void
+    {
+        self.drawable.deinit();
+    }
+
     pub fn update(self: *Self) void
     {
         // TODO: Move with the player
