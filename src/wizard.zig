@@ -95,7 +95,22 @@ fn wizard_update(self: *Actor) void
 
     self.game_object.drawable.transform.position.x += movement;
 
-    self.game_object.set_animation( self.game_object.state );
+    self.game_object.set_animation( self.game_object.state ) catch |e|
+    {
+        switch (e)
+        {
+            error.OutOfBounds =>
+            {
+                print("❌ ERROR @ wizard_update: Out Of Bounds access at {}\n",
+                      .{self.game_object.state});
+            },
+            error.AnimationUnset =>
+            {
+                print("⚠️ WARNING @ wizard_update: The state {} doesn't have an animation assigned.\n",
+                      .{self.game_object.state});
+            }
+        }
+    };
 }
 
 const State = enum(u8)

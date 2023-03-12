@@ -77,7 +77,22 @@ fn player_update(self: *Actor) void
     }
     // TODO: Attack
 
-    self.game_object.set_animation( self.game_object.state );
+    self.game_object.set_animation( self.game_object.state ) catch |e|
+    {
+        switch (e)
+        {
+            error.OutOfBounds =>
+            {
+                print("❌ ERROR @ player_update: Out Of Bounds access at {}\n",
+                      .{self.game_object.state});
+            },
+            error.AnimationUnset =>
+            {
+                print("⚠️ WARNING @ player_update: The state {} doesn't have an animation assigned.\n",
+                      .{self.game_object.state});
+            }
+        }
+    };
 }
 
 const State = enum(u8)

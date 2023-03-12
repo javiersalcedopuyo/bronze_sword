@@ -56,13 +56,11 @@ pub const GameObject = struct
         self.drawable.draw();
     }
 
-    pub fn set_animation(self: *Self, idx: usize) void
+    pub fn set_animation(self: *Self, idx: usize) !void
     {
         if (idx >= self.animations.items.len)
         {
-            print("❌ ERROR: Out Of Bounds Access at idx {}. Size is {}\n",
-                  .{idx, self.animations.items.len});
-            return ;
+            return error.OutOfBounds;
         }
 
         if (self.animations.items[idx]) |*anim|
@@ -73,6 +71,10 @@ pub const GameObject = struct
 
             self.drawable.region = rect;
             anim.update();
+        }
+        else
+        {
+            return error.AnimationUnset;
         }
     }
 
@@ -93,4 +95,10 @@ pub const GameObject = struct
         _ = other;
         return false;
     }
+};
+
+const AnimationError = error
+{
+    OutOfBounds,
+    AnimationUnset,
 };
