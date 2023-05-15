@@ -1,13 +1,7 @@
 const raylib = @cImport({
-    @cInclude("../dependencies/raylib.h");
+    @cInclude("raylib.h");
 });
 const Vector2 = raylib.Vector2;
-
-const print = @import("std").debug.print;
-
-const Scene = @import("scene.zig").Scene;
-const SceneID = @import("scene.zig").SceneID;
-const build_scene = @import("scene.zig").build_scene;
 
 pub const Game = struct
 {
@@ -15,9 +9,6 @@ pub const Game = struct
 
     title: []const u8,
     window_size: Vector2,
-    scenes: [SceneID.count]Scene = undefined,
-
-    active_scene_ID: SceneID = .game,
 
     pub fn init(self: *Self) void
     {
@@ -25,35 +16,18 @@ pub const Game = struct
                           @floatToInt(c_int, self.window_size.y),
                           self.title.ptr);
         raylib.SetTargetFPS(60);
-
-        // TODO: Initialise all scenes
-        self.scenes[@enumToInt(SceneID.game)] = build_scene(.game);
     }
 
-    pub fn deinit(self: *Self) void
+    pub fn deinit(_: *Self) void
     {
-        var i: usize = 0;
-        while (i<self.scenes.len) : (i += 1)
-        {
-            self.scenes[i].deinit();
-        }
-
         raylib.CloseWindow();
     }
 
-    pub fn run_game_loop(self: *Self) void
+    pub fn run_game_loop(_: *Self) void
     {
         raylib.BeginDrawing();
         raylib.ClearBackground(raylib.SKYBLUE);
-
-        self.get_active_scene().update();
-        self.get_active_scene().draw();
-
+        raylib.DrawText("Fresh Restart!", 0, 0, 32, raylib.BLACK);
         raylib.EndDrawing();
-    }
-
-    fn get_active_scene(self: *Self) *Scene
-    {
-        return &self.scenes[@enumToInt(self.active_scene_ID)];
     }
 };

@@ -1,8 +1,7 @@
-const std = @import("std");
 const Game = @import("game.zig").Game;
 
 const raylib = @cImport({
-    @cInclude("../dependencies/raylib.h");
+    @cInclude("raylib.h");
 });
 const Vector2 = raylib.Vector2;
 
