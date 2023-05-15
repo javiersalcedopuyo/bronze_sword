@@ -47,6 +47,14 @@ pub fn build_player(texture: Texture, scale: f32, scene: *Scene) Actor
             .{.x=FRAME_WIDTH * 2, .y=0, .width=FRAME_WIDTH, .height=FRAME_HEIGHT},
         }
     };
+    go.animations.items[@enumToInt(State.attack)] = Animation
+    {
+        .frame_rate = 0, // Single frame, no animation
+        .frames = &[_]Rectangle
+        {
+            .{ .x = 0, .y = FRAME_HEIGHT, .width = FRAME_WIDTH, .height = FRAME_HEIGHT }
+        },
+    };
 
     return Actor{.game_object = go,
                  .update_impl = &player_update,
@@ -55,11 +63,33 @@ pub fn build_player(texture: Texture, scale: f32, scene: *Scene) Actor
 
 fn player_update(self: *Actor) void
 {
+    process_input(self);
+    // TODO: Receive damage
+
+    self.game_object.set_animation(self.game_object.state) catch |e|
+    {
+        switch (e)
+        {
+            error.OutOfBounds => {
+                print("❌ ERROR @ player_update: Out Of Bounds access at {}\n", .{self.game_object.state});
+            },
+            error.AnimationUnset => {
+                print("⚠️ WARNING @ player_update: The state {} doesn't have an animation assigned.\n", .{self.game_object.state});
+            },
+        }
+    };
+}
+
+fn process_input(self: *Actor) void
+{
     const delta_time = raylib.GetFrameTime();
 
-    // TODO: Receive damage
     // TODO: Jump
-    if (raylib.IsKeyDown(raylib.KEY_D))
+    if (raylib.IsMouseButtonDown(raylib.MOUSE_BUTTON_LEFT))
+    {
+        self.game_object.state = @enumToInt(State.attack);
+    }
+    else if (raylib.IsKeyDown(raylib.KEY_D))
     {
         self.game_object.drawable.transform.position.x += self.move_speed * delta_time;
         self.game_object.set_direction(.right);
@@ -75,24 +105,6 @@ fn player_update(self: *Actor) void
     {
         self.game_object.state = @enumToInt(State.idle);
     }
-    // TODO: Attack
-
-    self.game_object.set_animation( self.game_object.state ) catch |e|
-    {
-        switch (e)
-        {
-            error.OutOfBounds =>
-            {
-                print("❌ ERROR @ player_update: Out Of Bounds access at {}\n",
-                      .{self.game_object.state});
-            },
-            error.AnimationUnset =>
-            {
-                print("⚠️ WARNING @ player_update: The state {} doesn't have an animation assigned.\n",
-                      .{self.game_object.state});
-            }
-        }
-    };
 }
 
 const State = enum(u8)
