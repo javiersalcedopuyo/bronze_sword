@@ -1,8 +1,14 @@
+const Character = @import( "character.zig" ).Character;
+
 const raylib = @cImport({
     @cInclude("raylib.h");
 });
 const Vector2 = raylib.Vector2;
 const Rectangle = raylib.Rectangle;
+
+const PLAYER_SPRITE_WIDTH   = 29;
+const PLAYER_SPRITE_HEIGHT  = 55;
+const PLAYER_SCALE          = 4;
 
 pub const Game = struct
 {
@@ -12,6 +18,7 @@ pub const Game = struct
     window_size: Vector2,
 
     background: raylib.Texture = undefined,
+    player: Character = undefined,
 
     pub fn init(self: *Self) void
     {
@@ -21,6 +28,23 @@ pub const Game = struct
         raylib.SetTargetFPS(60);
 
         self.background = raylib.LoadTexture( "assets/background2.png" );
+
+        self.player = Character
+        {
+            .texture  = raylib.LoadTexture( "assets/elite.png" ),
+            .scale    = Vector2{ .x = PLAYER_SCALE, .y = PLAYER_SCALE },
+            .position = Vector2
+            {
+                // Start in the middle of the screen, standing on the ground
+                .x = (self.window_size.x - (PLAYER_SPRITE_WIDTH * PLAYER_SCALE)) * 0.5,
+                .y = self.window_size.y - (PLAYER_SPRITE_HEIGHT * PLAYER_SCALE)
+            },
+            .frames = &[_]Rectangle
+            {
+                // Idle
+                .{ .x = 0, .y = 0, .width = PLAYER_SPRITE_WIDTH, .height = PLAYER_SPRITE_HEIGHT }
+            }
+        };
     }
 
     pub fn deinit(self: *Self) void
@@ -35,6 +59,7 @@ pub const Game = struct
         raylib.ClearBackground(raylib.SKYBLUE);
 
         self.DrawBackground();
+        self.player.draw();
 
         raylib.EndDrawing();
     }
