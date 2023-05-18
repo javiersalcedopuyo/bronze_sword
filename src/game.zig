@@ -43,7 +43,8 @@ pub const Game = struct
             {
                 // Idle
                 .{ .x = 0, .y = 0, .width = PLAYER_SPRITE_WIDTH, .height = PLAYER_SPRITE_HEIGHT }
-            }
+            },
+            .update_impl = player_update
         };
     }
 
@@ -57,6 +58,8 @@ pub const Game = struct
     {
         raylib.BeginDrawing();
         raylib.ClearBackground(raylib.SKYBLUE);
+
+        self.player.update();
 
         self.DrawBackground();
         self.player.draw();
@@ -94,3 +97,17 @@ pub const Game = struct
         );   
     }
 };
+
+fn player_update(self: *Character) void
+{
+    const delta_time = raylib.GetFrameTime();
+
+    if (raylib.IsKeyDown(raylib.KEY_D))
+    {
+        self.position.x += self.move_speed * delta_time;
+    }
+    else if (raylib.IsKeyDown(raylib.KEY_A))
+    {
+        self.position.x -= self.move_speed * delta_time;
+    }
+}

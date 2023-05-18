@@ -16,6 +16,10 @@ pub const Character = struct
     position:   Vector2 = .{ .x=0, .y=0 },
     scale:      Vector2 = .{ .x=1, .y=1 },
 
+    move_speed: f32 = 100,
+
+    update_impl: *const fn(*Self) void = dummy_update,
+
     pub fn draw(self: *Self) void
     {
         const src_rect = self.frames[0];
@@ -37,4 +41,11 @@ pub const Character = struct
             0,
             raylib.WHITE);
     }
+
+    pub fn update(self: *Self) void
+    {
+        self.update_impl( self );
+    }
+
+    fn dummy_update(_: *Self) void {}
 };
