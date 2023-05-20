@@ -36,24 +36,46 @@ pub fn new() Character
 
 fn player_update(self: *Character) void
 {
-    const time_since_start = raylib.GetTime();
-    const should_switch_anim = time_since_start - @trunc(time_since_start) >= 0.5;
+    process_input(self);
 
-    if (raylib.IsKeyDown(raylib.KEY_D))
+    switch (self.state)
     {
-        self.current_frame = if (should_switch_anim) 1 else 2;
-        self.facing_direction = Direction.right;
-        self.walk();
-    }
-    else if (raylib.IsKeyDown(raylib.KEY_A))
-    {
-        self.current_frame = if (should_switch_anim) 1 else 2;
-        self.facing_direction = Direction.left;
-        self.walk();
-    }
-    else
-    {
-        self.current_frame = 0;
+        .walking =>
+        {
+            const time_since_start = raylib.GetTime();
+            // Take a step every 0.5s
+            const is_first_step = time_since_start - @trunc(time_since_start) >= 0.5;
+            self.current_frame = if (is_first_step) 1 else 2;
+            self.walk();
+        },
+        .idle       => self.current_frame = 0,
+        .attacking  => self.current_frame = 3,
+        else => {}
     }
 }
 
+fn process_input(self: *Character) void
+{
+    if (self.state == .dead)
+        return;
+
+    self.state = .idle;
+
+    if (raylib.IsKeyDown(raylib.KEY_D))
+    {
+        self.state = .walking;
+        self.facing_direction = Direction.right;
+    }
+    else if (raylib.IsKeyDown(raylib.KEY_A))
+    {
+        self.state = .walking;
+        self.facing_direction = Direction.left;
+    }
+
+    // Attacking overrides the walking state
+    if (raylib.IsKeyDown(raylib.KEY_J))
+    {
+        // TODO: Add an attack duration and cooldown
+        self.state = .attacking;
+    }
+}

@@ -13,6 +13,15 @@ pub const Direction = enum(i8)
     left  = -1
 };
 
+pub const State = enum(u8)
+{
+    idle,
+    walking,
+    jumping,
+    attacking,
+    dead
+};
+
 pub const Character = struct
 {
     const Self = @This();
@@ -23,6 +32,7 @@ pub const Character = struct
     current_frame: usize = 0,
 
     facing_direction: Direction = .right,
+    state: State = .idle,
 
     position:   Vector2 = .{ .x=0, .y=0 },
     scale:      Vector2 = .{ .x=1, .y=1 },

@@ -6,6 +6,7 @@ const Rectangle = raylib.Rectangle;
 
 const Character = @import( "character.zig" ).Character;
 const Direction = @import( "character.zig" ).Direction;
+const State     = @import( "character.zig" ).State;
 const std       = @import( "std" );
 const RNG       = std.rand.DefaultPrng;
 
@@ -35,6 +36,7 @@ pub fn new() Character
             .{ .x = SPRITE_WIDTH * 2, .y = 0, .width = SPRITE_WIDTH, .height = SPRITE_HEIGHT },
         },
         .update_impl = update,
+        .state = .walking,
         .move_speed = MOVE_SPEED
     };
 }
