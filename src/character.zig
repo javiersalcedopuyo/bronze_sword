@@ -28,6 +28,7 @@ pub const Character = struct
     scale:      Vector2 = .{ .x=1, .y=1 },
 
     move_speed: f32 = 100,
+    timer:      f32 = 0,
 
     update_impl: *const fn(*Self) void = dummy_update,
 

@@ -13,6 +13,7 @@ const RNG       = std.rand.DefaultPrng;
 pub const SPRITE_WIDTH   = 29;
 pub const SPRITE_HEIGHT  = 55;
 pub const SCALE          = 4;
+pub const MOVE_SPEED     = 50;
 
 const SPRITE_ATLAS_PATH = "assets/wizard.png";
 
@@ -34,9 +35,26 @@ pub fn new() Character
             .{ .x = SPRITE_WIDTH * 2, .y = 0, .width = SPRITE_WIDTH, .height = SPRITE_HEIGHT },
         },
         .update_impl = update,
+        .move_speed = MOVE_SPEED
     };
 }
 
-fn update(_: *Character) void
+fn update(self: *Character) void
 {
+    self.timer -= raylib.GetFrameTime();
+    if (self.timer <= 0)
+    {
+        if (rng.random().boolean())
+        {
+            self.facing_direction = @intToEnum(Direction, @enumToInt(self.facing_direction) * -1 );
+        }
+        // Reset the timer to 2 seconds
+        self.timer = 2;
+    }
+
+    // Do a walk animation loop per second
+    const time_since_start = raylib.GetTime();
+    self.current_frame = if (time_since_start - @trunc(time_since_start) >= 0.5) 0 else 1;
+
+    self.walk();
 }
