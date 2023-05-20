@@ -1,14 +1,11 @@
 const Character = @import( "character.zig" ).Character;
+const Player = @import( "player.zig" );
 
 const raylib = @cImport({
     @cInclude("raylib.h");
 });
 const Vector2 = raylib.Vector2;
 const Rectangle = raylib.Rectangle;
-
-const PLAYER_SPRITE_WIDTH   = 29;
-const PLAYER_SPRITE_HEIGHT  = 55;
-const PLAYER_SCALE          = 4;
 
 pub const Game = struct
 {
@@ -29,22 +26,12 @@ pub const Game = struct
 
         self.background = raylib.LoadTexture( "assets/background2.png" );
 
-        self.player = Character
+        self.player = Player.new();
+        // Start in the middle of the screen, standing on the ground
+        self.player.position = Vector2
         {
-            .texture  = raylib.LoadTexture( "assets/elite.png" ),
-            .scale    = Vector2{ .x = PLAYER_SCALE, .y = PLAYER_SCALE },
-            .position = Vector2
-            {
-                // Start in the middle of the screen, standing on the ground
-                .x = (self.window_size.x - (PLAYER_SPRITE_WIDTH * PLAYER_SCALE)) * 0.5,
-                .y = self.window_size.y - (PLAYER_SPRITE_HEIGHT * PLAYER_SCALE)
-            },
-            .frames = &[_]Rectangle
-            {
-                // Idle
-                .{ .x = 0, .y = 0, .width = PLAYER_SPRITE_WIDTH, .height = PLAYER_SPRITE_HEIGHT }
-            },
-            .update_impl = player_update
+            .x = (self.window_size.x - (Player.SPRITE_WIDTH * Player.SCALE)) * 0.5,
+            .y = self.window_size.y - (Player.SPRITE_HEIGHT * Player.SCALE)
         };
     }
 
@@ -97,17 +84,3 @@ pub const Game = struct
         );   
     }
 };
-
-fn player_update(self: *Character) void
-{
-    const delta_time = raylib.GetFrameTime();
-
-    if (raylib.IsKeyDown(raylib.KEY_D))
-    {
-        self.position.x += self.move_speed * delta_time;
-    }
-    else if (raylib.IsKeyDown(raylib.KEY_A))
-    {
-        self.position.x -= self.move_speed * delta_time;
-    }
-}
