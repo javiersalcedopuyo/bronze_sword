@@ -63,9 +63,6 @@ pub const Game = struct
 
     pub fn run_game_loop(self: *Self) void
     {
-        raylib.BeginDrawing();
-        raylib.ClearBackground(raylib.SKYBLUE);
-
         self.player.update();
         for (&self.enemies) |*opt_enemy|
         {
@@ -75,8 +72,18 @@ pub const Game = struct
             }
         }
 
+        self.draw();
+    }
+
+    fn draw(self: *Self) void
+    {
+        raylib.BeginDrawing();
+        raylib.ClearBackground(raylib.SKYBLUE);
+
         self.DrawBackground();
+
         self.player.draw();
+
         for (&self.enemies) |*opt_enemy|
         {
             if (opt_enemy.*) |*enemy|
