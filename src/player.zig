@@ -1,10 +1,11 @@
 const raylib = @cImport({
-    @cInclude("raylib.h");
-});
+    @cInclude("raylib.h");});
+
 const Vector2 = raylib.Vector2;
 const Rectangle = raylib.Rectangle;
 
 const Character = @import( "character.zig" ).Character;
+const Direction = @import( "character.zig" ).Direction;
 
 pub const SPRITE_WIDTH   = 29;
 pub const SPRITE_HEIGHT  = 55;
@@ -16,12 +17,18 @@ pub fn new() Character
 {
     return Character
     {
-        .texture  = raylib.LoadTexture(SPRITE_ATLAS_PATH),
-        .scale    = Vector2{ .x = SCALE, .y = SCALE },
-        .frames = &[_]Rectangle
+        .texture = raylib.LoadTexture(SPRITE_ATLAS_PATH),
+        .scale   = Vector2{ .x = SCALE, .y = SCALE },
+        .frames  = &[_]Rectangle
         {
             // Idle
-            .{ .x = 0, .y = 0, .width = SPRITE_WIDTH, .height = SPRITE_HEIGHT }
+            .{ .x = 0, .y = 0, .width = SPRITE_WIDTH, .height = SPRITE_HEIGHT },
+            // Walk loop 1
+            .{ .x = SPRITE_WIDTH, .y = 0, .width = SPRITE_WIDTH, .height = SPRITE_HEIGHT },
+            // Walk loop 2
+            .{ .x = SPRITE_WIDTH * 2, .y = 0, .width = SPRITE_WIDTH, .height = SPRITE_HEIGHT },
+            // Attack
+            .{ .x = 0, .y = SPRITE_HEIGHT, .width = SPRITE_WIDTH, .height = SPRITE_HEIGHT },
         },
         .update_impl = player_update
     };
@@ -29,14 +36,18 @@ pub fn new() Character
 
 fn player_update(self: *Character) void
 {
-    const delta_time = raylib.GetFrameTime();
+    const time_since_start = raylib.GetTime();
+    const should_switch_anim = time_since_start - @trunc(time_since_start) >= 0.5;
 
     if (raylib.IsKeyDown(raylib.KEY_D))
     {
-        self.position.x += self.move_speed * delta_time;
+        self.current_frame = if (should_switch_anim) 1 else 2;
+        self.walk(Direction.right);
     }
     else if (raylib.IsKeyDown(raylib.KEY_A))
     {
-        self.position.x -= self.move_speed * delta_time;
+        self.current_frame = if (should_switch_anim) 1 else 2;
+        self.walk(Direction.left);
     }
 }
+
