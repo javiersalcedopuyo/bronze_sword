@@ -64,15 +64,14 @@ pub const Character = struct
 
     // Only changes position and facing direction.
     // Animation frames and other logic should be handled in the update
-    pub fn walk(self: *Character, direction: Direction) void
+    pub fn walk(self: *Character) void
     {
         const delta_time = raylib.GetFrameTime();
 
-        self.facing_direction = direction;
         self.position.x +=
             self.move_speed *
             delta_time *
-            @intToFloat(f32, @enumToInt(direction));
+            @intToFloat(f32, @enumToInt(self.facing_direction));
     }
 
     fn dummy_update(_: *Self) void {}

@@ -42,12 +42,18 @@ fn player_update(self: *Character) void
     if (raylib.IsKeyDown(raylib.KEY_D))
     {
         self.current_frame = if (should_switch_anim) 1 else 2;
-        self.walk(Direction.right);
+        self.facing_direction = Direction.right;
+        self.walk();
     }
     else if (raylib.IsKeyDown(raylib.KEY_A))
     {
         self.current_frame = if (should_switch_anim) 1 else 2;
-        self.walk(Direction.left);
+        self.facing_direction = Direction.left;
+        self.walk();
+    }
+    else
+    {
+        self.current_frame = 0;
     }
 }
 
