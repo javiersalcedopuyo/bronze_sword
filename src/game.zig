@@ -1,5 +1,6 @@
 const Character = @import( "character.zig" ).Character;
 const Player = @import( "player.zig" );
+const Wizard = @import( "wizard.zig" );
 
 const raylib = @cImport({
     @cInclude("raylib.h");
@@ -16,6 +17,7 @@ pub const Game = struct
 
     background: raylib.Texture = undefined,
     player: Character = undefined,
+    enemy: Character = undefined,
 
     pub fn init(self: *Self) void
     {
@@ -27,12 +29,21 @@ pub const Game = struct
         self.background = raylib.LoadTexture( "assets/background2.png" );
 
         self.player = Player.new();
-        // Start in the middle of the screen, standing on the ground
+        // Spawn the player in the left corner
         self.player.position = Vector2
         {
-            .x = (self.window_size.x - (Player.SPRITE_WIDTH * Player.SCALE)) * 0.5,
+            .x = 0,
             .y = self.window_size.y - (Player.SPRITE_HEIGHT * Player.SCALE)
         };
+
+        // Spawn a single wizard in the right corner, looking at the player
+        self.enemy = Wizard.new();
+        self.enemy.position = Vector2
+        {
+            .x = self.window_size.x - (Wizard.SPRITE_WIDTH * Wizard.SCALE),
+            .y = self.window_size.y - (Player.SPRITE_HEIGHT * Player.SCALE)
+        };
+        self.enemy.facing_direction = .left;
     }
 
     pub fn deinit(self: *Self) void
@@ -47,9 +58,11 @@ pub const Game = struct
         raylib.ClearBackground(raylib.SKYBLUE);
 
         self.player.update();
+        self.enemy.update();
 
         self.DrawBackground();
         self.player.draw();
+        self.enemy.draw();
 
         raylib.EndDrawing();
     }
