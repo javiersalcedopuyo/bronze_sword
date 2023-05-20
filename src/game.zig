@@ -8,6 +8,8 @@ const raylib = @cImport({
 const Vector2 = raylib.Vector2;
 const Rectangle = raylib.Rectangle;
 
+const MAX_ENEMIES = 8;
+
 pub const Game = struct
 {
     const Self = @This();
@@ -17,7 +19,7 @@ pub const Game = struct
 
     background: raylib.Texture = undefined,
     player: Character = undefined,
-    enemy: Character = undefined,
+    enemies: [MAX_ENEMIES]?Character = .{null} ** MAX_ENEMIES,
 
     pub fn init(self: *Self) void
     {
@@ -29,21 +31,28 @@ pub const Game = struct
         self.background = raylib.LoadTexture( "assets/background2.png" );
 
         self.player = Player.new();
-        // Spawn the player in the left corner
+        // Spawn the player in the middle of the screen
         self.player.position = Vector2
         {
-            .x = 0,
+            .x = (self.window_size.x - (Player.SPRITE_WIDTH * Player.SCALE)) * 0.5,
             .y = self.window_size.y - (Player.SPRITE_HEIGHT * Player.SCALE)
         };
 
-        // Spawn a single wizard in the right corner, looking at the player
-        self.enemy = Wizard.new();
-        self.enemy.position = Vector2
+        // Spawn 2 wizards at both sides of the screen, facing the player
+        self.enemies[0] = Wizard.new();
+        self.enemies[0].?.position = Vector2
         {
             .x = self.window_size.x - (Wizard.SPRITE_WIDTH * Wizard.SCALE),
             .y = self.window_size.y - (Player.SPRITE_HEIGHT * Player.SCALE)
         };
-        self.enemy.facing_direction = .left;
+        self.enemies[0].?.facing_direction = .left;
+
+        self.enemies[1] = Wizard.new();
+        self.enemies[1].?.position = Vector2
+        {
+            .x = 0,
+            .y = self.window_size.y - (Player.SPRITE_HEIGHT * Player.SCALE)
+        };
     }
 
     pub fn deinit(self: *Self) void
@@ -58,11 +67,23 @@ pub const Game = struct
         raylib.ClearBackground(raylib.SKYBLUE);
 
         self.player.update();
-        self.enemy.update();
+        for (&self.enemies) |*opt_enemy|
+        {
+            if (opt_enemy.*) |*enemy|
+            {
+                enemy.update();
+            }
+        }
 
         self.DrawBackground();
         self.player.draw();
-        self.enemy.draw();
+        for (&self.enemies) |*opt_enemy|
+        {
+            if (opt_enemy.*) |*enemy|
+            {
+                enemy.draw();
+            }
+        }
 
         raylib.EndDrawing();
     }
